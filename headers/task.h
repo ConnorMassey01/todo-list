@@ -19,8 +19,8 @@ class Task {
 private:
     std::string title;
     int id;
-    std::shared_ptr<Task> parentTask;
-    std::vector<std::shared_ptr<Task>> subTasks;
+    Task* parentTask;
+    std::vector<Task*> subTasks;
     std::vector<ProgressNote> progressNotes;
     Status status;
     std::string dueDate;
@@ -38,26 +38,34 @@ public:
     //getter and setters
     void setTitle(std::string title);
     std::string getTitle();
+
     int getId();
-    void setParentTask(std::shared_ptr<Task> parentTask);
-    std::shared_ptr<Task> getParentTask();
-    void addSubTask(std::shared_ptr<Task> subTask);
-    std::vector<std::shared_ptr<Task>> getSubTasks();
+
+    void setParentTask(Task* parentTask);
+    Task* getParentTask();
+    
+    void addSubTask(Task* subTask);
+    void removeSubTask(Task* subTask);
+    std::vector<Task*> getSubTasks();
+
     void addProgressNote(std::string note);
     std::vector<ProgressNote> getProgressNotes();
+
     void startTask();
     void finishTask();
+
     Status getStatus();
+
     std::string getDueDate();
     void setDueDate(std::string date);
+
     std::string getDateCreated();
     std::string getDateStarted();
     std::string getDateFinished();
 
-    //helper function
-    static void addSubtaskToParent(std::shared_ptr<Task> subTask, std::shared_ptr<Task> parentTask);
-
     //printing for debugging
     void printTask();
+    void printTaskTree(int level);
+    void printParents();
 
 };

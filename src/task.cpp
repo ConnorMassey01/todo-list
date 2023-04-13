@@ -34,6 +34,7 @@ Task::Task(const std::string &title, int id, int daysUntilDueDate){
     this->title = title;
     this->id = id;
     this->status = Status::Backlog;
+    this->parentTask = nullptr;
     //get current date
     std::time_t t = std::time(0);  
     std::tm* now = std::localtime(&t);
@@ -47,7 +48,7 @@ Task::Task(const std::string &title, int id, int daysUntilDueDate){
 }
 
 Task::~Task(){
-    std::cout << "Task Destructor\n";
+    std::cout << "Task Destructor for " << this->title << std::endl;
 }
 
 void Task:: setTitle(std::string title){
@@ -59,16 +60,26 @@ std::string Task::getTitle(){
 int Task::getId(){
     return this->id;
 }
-void Task::setParentTask(std::shared_ptr<Task> parentTask){
+void Task::setParentTask(Task* parentTask){
     this->parentTask = parentTask;
 }
-std::shared_ptr<Task> Task::getParentTask(){
+Task* Task::getParentTask(){
     return this->parentTask;
 }
-void Task::addSubTask(std::shared_ptr<Task> subTask){
-    this->subTasks.push_back(subTask);
+void Task::addSubTask(Task* subTaskToAdd){
+    this->subTasks.push_back(subTaskToAdd);
+    subTaskToAdd->parentTask = this;
 }
-std::vector<std::shared_ptr<Task>> Task:: getSubTasks(){
+void Task::removeSubTask(Task* subTaskToRemove){
+    for(int i = 0; i < this->subTasks.size(); i++){
+        if(this->subTasks[i]->id == subTaskToRemove->getId()){
+            this->subTasks.erase(this->subTasks.begin() + i);
+            break;
+        }
+    }
+    subTaskToRemove->parentTask = nullptr;
+}
+std::vector<Task*> Task:: getSubTasks(){
     return this->subTasks;
 }
 void Task::addProgressNote(std::string note){
@@ -106,11 +117,6 @@ std::string Task::getDateStarted(){
 }
 std::string Task::getDateFinished(){
     return this->dateFinished;
-}
-
-void Task::addSubtaskToParent(std::shared_ptr<Task> subTask, std::shared_ptr<Task> parentTask){
-    subTask->setParentTask(parentTask);
-    parentTask->addSubTask(subTask);
 }
 
 void Task::printTask(){
@@ -166,4 +172,28 @@ void Task::printTask(){
     std::cout << "Date Started: " << this->dateStarted << std::endl;
     //print the date finished
     std::cout << "Date Finished: " << this->dateFinished << std::endl;
+}
+
+void Task::printTaskTree(int level){
+    if(level == 0){
+        std::cout << "----- Task tree starting at " << this->title << " -----" << std::endl;
+    }
+    for(int i = 0; i < level; i++){
+        if(i % 2 == 0){
+            std::cout << "|";
+        }
+        std::cout << " ";
+    }
+    std::cout << this->title << std::endl;
+    for(int i = 0; i < this->subTasks.size(); i++){
+        subTasks[i]->printTaskTree(level + 2);
+    }
+}
+void Task::printParents(){
+    std::cout << "----- Parents of " << this->title << " -----" << std::endl;
+    Task* currentTask = this->parentTask;
+    while(currentTask != nullptr){
+        std::cout << currentTask->title << std::endl;
+        currentTask = currentTask->parentTask;
+    }
 }
