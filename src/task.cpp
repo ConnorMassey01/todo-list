@@ -1,30 +1,10 @@
 #include "../headers/task.h"
+#include "../headers/date.h"
 #include <iostream>
 
-std::string Task::getDate(int offset){
-    std::time_t t = std::time(0);  
-    std::tm* now = std::localtime(&t);
-    int year = now->tm_year;
-    int month = now->tm_mon;
-    int day = now->tm_mday;
-    //set the date created
-    this->dateCreated = MONTHS[month] + " " + std::to_string(day);
-    //set the due date
-    day = day + offset;
-    while(day > DAYS_PER_MONTH[month]){
-        //account for leap year
-        if(year % 4 == 0 && month == 1){
-            day--;
-        }
-        day = day - DAYS_PER_MONTH[month];
-        month = month + 1;
-        if (month == 12){
-            month = 0;
-            year++;
-        }
-    }
-    return MONTHS[month] + " " + std::to_string(day);
-}
+//private methods
+
+//public methods
 
 Task::Task(){
     //does nothing
@@ -34,17 +14,11 @@ Task::Task(const std::string &title, int id, int daysUntilDueDate){
     this->title = title;
     this->id = id;
     this->status = Status::Backlog;
-    this->parentTask = nullptr;
-    //get current date
-    std::time_t t = std::time(0);  
-    std::tm* now = std::localtime(&t);
-    int year = now->tm_year;
-    int month = now->tm_mon;
-    int day = now->tm_mday;
+    this->parentTask = nullptr; 
     //set the date created
-    this->dateCreated = this->getDate(0);
+    this->dateCreated = Date::getDate(0);
     //set the due date
-    this->dueDate = this->getDate(daysUntilDueDate);
+    this->dueDate = Date::getDate(daysUntilDueDate);
 }
 
 Task::~Task(){
@@ -84,7 +58,7 @@ std::vector<Task*> Task:: getSubTasks(){
 }
 void Task::addProgressNote(std::string note){
     //get current date
-    std::string date = this->getDate(0);
+    std::string date = Date::getDate(0);
     ProgressNote newNote = {note, date};
     
     this->progressNotes.push_back(newNote);
@@ -94,11 +68,11 @@ std::vector<ProgressNote> Task::getProgressNotes(){
 }
 void Task::startTask(){
     this->status = Status::InProgress;
-    this->dateStarted = this->getDate(0);
+    this->dateStarted = Date::getDate(0);
 }
 void Task::finishTask(){
     this->status = Status::Done;
-    this->dateFinished = this->getDate(0);
+    this->dateFinished = Date::getDate(0);
 }
 Status Task::getStatus(){
     return this->status;
