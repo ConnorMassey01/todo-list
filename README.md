@@ -47,7 +47,7 @@
     - list what is due in the next x days
 
 ## Command line interface
-- Create a new project: `add project <project name>`
+- Create a new project: `create project <project name>`
 - Open a project: `open <project name>`
 - Once a project it opened, you can add tasks and subtasks to the backlog: `add task <task name>`
     - You will then be asked to supply a parent task (if necessary) and a due date
