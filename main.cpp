@@ -2,17 +2,18 @@
 #include "headers/task.h"
 #include "headers/question.h"
 #include "headers/project.h"
+#include "headers/fileManager.h"
 
 void testTaskClass(){
-   Task parentTask("Parent", 0, 7);
+   Task parentTask = Task("Parent", 0, 7);
    parentTask.addProgressNote("Note on progress");
    parentTask.startTask();
    parentTask.finishTask();
    parentTask.printTask();
 
-   Task childTask("Child", 1, 4);
-   Task otherChildTask("Other child", 1, 4);
-   Task grandchildTask("Grandchild", 1, 4);
+   Task childTask = Task("Child", 1, 4);
+   Task otherChildTask = Task("Other child", 1, 4);
+   Task grandchildTask = Task("Grandchild", 1, 4);
    childTask.addProgressNote("This is my message to add");
 
    parentTask.addSubTask(&childTask);
@@ -36,8 +37,8 @@ void testQuestionClass(){
 }
 
 void testProjectClass(){
-   Task exampleTask("Example Task", 0, 3);
-   Question myQuestion("Example Question", &exampleTask);
+   Task exampleTask = Task("Example Task", 0, 3);
+   Question myQuestion = Question("Example Question", &exampleTask);
    std::vector<Task*> tasks;
    tasks.push_back(&exampleTask);
    std::vector<Question*> questions;
@@ -52,7 +53,8 @@ int main() {
    //testQuestionClass();
    testProjectClass();
    //open file with paths to project configurations
-
+   std::cout << "File Manager" << std::endl;
+   FileManager fileManager = FileManager();
    //load all projects
 
    //call command line interface manager
