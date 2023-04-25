@@ -5,19 +5,18 @@
 #include <iostream>
 #include "project.h"
 
-class FileManager {
+#define CONFIG_FILE_PATH "storage\\project-list.txt"
+
+class ProjectLoader {
 private:
-    std::string configurationFilePath;
     std::vector<Project> projects;
     //Load project
     Project loadProject(std::string pathToProject);
     std::vector<std::string> getProjectPaths();
     
 public:
-    FileManager();
-    ~FileManager();
-
-    void saveProject(Project project);
+    ProjectLoader();
+    ~ProjectLoader();
 
     std::vector<Project> getProjects();
 

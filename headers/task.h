@@ -26,6 +26,8 @@ private:
 public:
     Task();
     Task(const std::string &title, int id, int daysUntilDueDate);
+    Task(const std::string &title, int id, const std::vector<ProgressNote> &progressNotes, Status status, const std::string &dueDate,
+        const std::string &dateCreated, const std::string &dateStarted, const std::string &dateFinished);
     ~Task();
 
     //getter and setters

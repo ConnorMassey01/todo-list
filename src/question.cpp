@@ -19,7 +19,7 @@ Question::Question(std::string message, Task* linkedTask){
 }
 
 Question::~Question(){
-    std::cout << "Question destructor" << std::endl;
+    std::cout << "Question destructor" << "\n";
 }
 
 void Question::setMessage(std::string message){
@@ -44,11 +44,11 @@ Task* Question::getLinkedTask(){
 }
 
 void Question::printQuestion(){
-    std::cout << "--- Question ---" << std::endl;
-    std::cout << "Q: " << this->message << std::endl;
-    std::cout << "A: " << this->answer << std::endl;
+    std::cout << "--- Question ---" << "\n";
+    std::cout << "Q: " << this->message << "\n";
+    std::cout << "A: " << this->answer << "\n";
     if(this->linkedTask != nullptr){
-        std::cout << "Task: " << this->linkedTask->getTitle() << std::endl;
+        std::cout << "Task: " << this->linkedTask->getTitle() << "\n";
     }
     
 }

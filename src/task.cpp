@@ -21,8 +21,21 @@ Task::Task(const std::string &title, int id, int daysUntilDueDate){
     this->dueDate = Date::getDate(daysUntilDueDate);
 }
 
+Task::Task(const std::string &title, int id, const std::vector<ProgressNote> &progressNotes, Status status, const std::string &dueDate,
+           const std::string &dateCreated, const std::string &dateStarted, const std::string &dateFinished){
+    this->title = title;
+    this->id = id;
+    this->progressNotes = progressNotes;
+    this->status = status;
+    this->dueDate = dueDate;
+    this->dateCreated = dateCreated;
+    this->dateStarted = dateStarted;
+    this->dateFinished = dateFinished;
+    this->parentTask = nullptr; 
+}
+
 Task::~Task(){
-    std::cout << "Task Destructor for " << this->title << std::endl;
+    std::cout << "Task Destructor for " << this->title << "\n";
 }
 
 void Task:: setTitle(std::string title){
@@ -96,61 +109,61 @@ std::string Task::getDateFinished(){
 void Task::printTask(){
     std::cout << "Title: " << this->title << std:: endl;
     //print the id
-    std::cout << "ID: " << this->id << std::endl;
+    std::cout << "ID: " << this->id << "\n";
     //print the parent task
     std::cout << "Parent task: ";
     if(this->parentTask == nullptr){
-        std::cout << "None" << std::endl;
+        std::cout << "None\n";
     }
     else{
-        std::cout << this->parentTask->title  << std::endl;
+        std::cout << this->parentTask->title  << "\n";
     }
     //print the sub tasks
     if(this->subTasks.size() > 0){
-        std::cout << "----- Sub tasks -----" << std::endl;
+        std::cout << "----- Sub tasks -----\n";
         for(int i = 0; i < this->subTasks.size(); i++){
-            std::cout << this->subTasks[i]->title << std::endl;
+            std::cout << this->subTasks[i]->title << "\n";
         }    
-        std::cout << "---------------------" << std::endl;
+        std::cout << "---------------------\n";
     }
     else{
-        std::cout << "No sub tasks" << std::endl;
+        std::cout << "No sub tasks\n";
     }
 
     //print the progress notes
     if(this->progressNotes.size() > 0){
-        std::cout << "----- Progress notes -----" << std::endl;
+        std::cout << "----- Progress notes -----\n";
         for(int i = 0; i < this->progressNotes.size(); i++){
-            std::cout << this->progressNotes[i].note << " - Date: " << this->progressNotes[i].date << std::endl;
+            std::cout << this->progressNotes[i].note << " - Date: " << this->progressNotes[i].date << "\n";
         }    
-        std::cout << "--------------------------" << std::endl;
+        std::cout << "--------------------------\n";
     }
     else{
-        std::cout << "No progress notes" << std::endl;
+        std::cout << "No progress notes\n";
     }
     //print the status
     if(this->status == Status::Backlog){
-        std::cout << "Status: Backlog" << std::endl;
+        std::cout << "Status: Backlog\n";
     }
     else if(this->status == Status::InProgress){
-        std::cout << "Status: In progress" << std::endl;
+        std::cout << "Status: In progress\n";
     }
     else{
-        std::cout << "Status: Done" << std::endl;
+        std::cout << "Status: Done\n";
     }
     //print the due date
-    std::cout << "Due Date: " << this->dueDate << std::endl;
+    std::cout << "Due Date: " << this->dueDate << "\n";
     //print the date created
-    std::cout << "Date Created: " << this->dateCreated << std::endl;
+    std::cout << "Date Created: " << this->dateCreated << "\n";
     //print the date started
-    std::cout << "Date Started: " << this->dateStarted << std::endl;
+    std::cout << "Date Started: " << this->dateStarted << "\n";
     //print the date finished
-    std::cout << "Date Finished: " << this->dateFinished << std::endl;
+    std::cout << "Date Finished: " << this->dateFinished << "\n";
 }
 
 void Task::printTaskTree(int level){
     if(level == 0){
-        std::cout << "----- Task tree starting at " << this->title << " -----" << std::endl;
+        std::cout << "----- Task tree starting at " << this->title << " -----\n";
     }
     for(int i = 0; i < level; i++){
         if(i % 2 == 0){
@@ -158,16 +171,16 @@ void Task::printTaskTree(int level){
         }
         std::cout << " ";
     }
-    std::cout << this->title << std::endl;
+    std::cout << this->title << "\n";
     for(int i = 0; i < this->subTasks.size(); i++){
         subTasks[i]->printTaskTree(level + 2);
     }
 }
 void Task::printParents(){
-    std::cout << "----- Parents of " << this->title << " -----" << std::endl;
+    std::cout << "----- Parents of " << this->title << " -----\n";
     Task* currentTask = this->parentTask;
     while(currentTask != nullptr){
-        std::cout << currentTask->title << std::endl;
+        std::cout << currentTask->title << "\n";
         currentTask = currentTask->parentTask;
     }
 }
