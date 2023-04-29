@@ -36,6 +36,13 @@ Task::Task(const std::string &title, int id, const std::vector<ProgressNote> &pr
 
 Task::~Task(){
     std::cout << "Task Destructor for " << this->title << "\n";
+    //delete all subtasks
+    for(int i = 0; i < this->subTasks.size(); i++){
+        std::cout << "Deleting subTask: " << this->subTasks[i]->getTitle() << "\n";
+        delete this->subTasks[i];
+    }
+    this->subTasks.clear();
+    this->parentTask = nullptr;
 }
 
 void Task:: setTitle(std::string title){
@@ -59,12 +66,14 @@ void Task::addSubTask(Task* subTaskToAdd){
 }
 void Task::removeSubTask(Task* subTaskToRemove){
     for(int i = 0; i < this->subTasks.size(); i++){
+        //find the subTask with the correct id
         if(this->subTasks[i]->id == subTaskToRemove->getId()){
             this->subTasks.erase(this->subTasks.begin() + i);
             break;
         }
     }
-    subTaskToRemove->parentTask = nullptr;
+    //delete the subTaskToRemove
+    delete subTaskToRemove;
 }
 std::vector<Task*> Task:: getSubTasks(){
     return this->subTasks;
@@ -158,7 +167,7 @@ void Task::printTask(){
     //print the date started
     std::cout << "Date Started: " << this->dateStarted << "\n";
     //print the date finished
-    std::cout << "Date Finished: " << this->dateFinished << "\n";
+    std::cout << "Date Finished: " << this->dateFinished << "\n\n";
 }
 
 void Task::printTaskTree(int level){

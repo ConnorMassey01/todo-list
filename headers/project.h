@@ -7,6 +7,7 @@
 #include <map>
 #include "task.h"
 #include "question.h"
+#include "verbose.h"
 
 class Project {
 private:
@@ -17,6 +18,7 @@ private:
 
     void load();
     std::vector<Task*> loadTasks(std::ifstream& projectFile);
+    std::vector<Task*> connectTasks(std::map<int, std::vector<int>> taskMap, std::vector<Task*> allTasks);
     std::vector<Question*> loadQuestions(std::ifstream& projectFile);
     void saveFileLocation();
     void saveTask(std::ofstream& projectFile, Task* task);

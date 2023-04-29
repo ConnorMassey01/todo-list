@@ -7,15 +7,20 @@ ProjectLoader::ProjectLoader(){
     std::vector<std::string> projectPaths = this->getProjectPaths();
     //load all of the projects
     for(int i = 0; i < projectPaths.size(); i++){
-        this->projects.push_back(Project(projectPaths[i]));
+        this->projects.push_back(new Project(projectPaths[i]));
     }
 }
 
 ProjectLoader::~ProjectLoader(){
     std::cout << "Project loader destructor\n";
+    for(int i = 0; i < this->projects.size(); i++){
+        std::cout << "----- Delete project " << i << ": " << this->projects[i]->getTitle() << " -----\n";
+        delete this->projects[i]; //calls the projects destructor
+    }
+    this->projects.clear();
 }
 
-std::vector<Project> ProjectLoader::getProjects(){
+std::vector<Project*> ProjectLoader::getProjects(){
     return this->projects;
 }
 

@@ -9,15 +9,13 @@
 
 class ProjectLoader {
 private:
-    std::vector<Project> projects;
-    //Load project
-    Project loadProject(std::string pathToProject);
+    std::vector<Project*> projects;
     std::vector<std::string> getProjectPaths();
     
 public:
     ProjectLoader();
     ~ProjectLoader();
 
-    std::vector<Project> getProjects();
+    std::vector<Project*> getProjects();
 
 };

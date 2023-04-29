@@ -23,6 +23,19 @@ Project::Project(std::string title, std::string pathToConfig, std::vector<Task*>
 }
 Project::~Project(){
     std::cout << "Project destructor for: " << this->title << "\n";
+
+    //delete all Task pointers
+    for(int i = 0; i < this->tasks.size(); i++){
+        if(verbose) std::cout << "Delete task: " << this->tasks[i]->getTitle() << "\n";
+        delete this->tasks[i]; //will call the destructor for tasks[i]
+    }
+    this->tasks.clear();
+    //delete all Question pointers
+    for(int i = 0; i < this->questions.size(); i++){
+        if(verbose) std::cout << "Delete question: " << this->questions[i]->getMessage() << "\n";
+        delete this->questions[i];
+    }
+    this->questions.clear();
 }
 
 void Project::setTitle(std::string title){
@@ -61,16 +74,16 @@ std::vector<Question*> Project::getQuestions(){
 }
 
 void Project::save(){
-    std::cout << "\n\n ----- Save Project to: " + this->pathToConfig << " -----\n\n";
+    if(verbose) std::cout << "\n ----- Save Project to: " + this->pathToConfig << " -----\n\n";
     //try opening the text file at project.pathToConfig
     std::ofstream projectFile(this->pathToConfig, std::ios::binary);
     if(projectFile.is_open()){
         //get the size of the string
         size_t titleSize = this->title.size();
-        std::cout << "Title size: " << titleSize << "\n";
+        if(verbose) std::cout << "Title size: " << titleSize << "\n";
         projectFile.write(reinterpret_cast<const char*>(&titleSize), sizeof(titleSize));
         //write the string to the file
-        std::cout << "Title: " << this->title << "\n";
+        if(verbose) std::cout << "Title: " << this->title << "\n";
         projectFile.write(reinterpret_cast<const char*>(&this->title[0]), titleSize);
 
         //map out the structure of all tasks and sub-tasks. Maps parent id to children ids
@@ -96,20 +109,20 @@ void Project::save(){
                 subTaskIds.push_back(subTasks[i]->getId());
             }
             if(!subTaskIds.empty()){
-                std::cout << "Task map adding " << task->getId() << " -> ";
+                if(verbose) std::cout << "Task map adding " << task->getId() << " -> ";
                 for(int i = 0; i < subTaskIds.size(); i++){
-                    std::cout << subTaskIds[i];
+                    if(verbose) std::cout << subTaskIds[i];
                     if(i != subTaskIds.size()-1){
-                        std::cout << ", ";
+                        if(verbose) std::cout << ", ";
                     }
                 }
-                std::cout << "\n";
+                if(verbose) std::cout << "\n";
                 taskMap.insert(std::pair<int, std::vector<int>>(task->getId(), subTaskIds));
             }
         }
         //write the number of tasks in the mapping
         size_t taskMapSize = taskMap.size();
-        std::cout << "Task map size: " << taskMapSize << "\n";
+        if(verbose) std::cout << "Task map size: " << taskMapSize << "\n";
         projectFile.write(reinterpret_cast<const char*>(&taskMapSize), sizeof(taskMapSize));
         //write each mapping to the file
         for(auto i = taskMap.begin(); i != taskMap.end(); i++){
@@ -126,7 +139,7 @@ void Project::save(){
             }
         }
         //write the total number of tasks to the file
-        std::cout << "Total number of tasks: " << taskCount << "\n";
+        if(verbose) std::cout << "Total number of tasks: " << taskCount << "\n";
         projectFile.write(reinterpret_cast<const char*>(&taskCount), sizeof(taskCount));
         //write all the tasks to the file
         for(int i = 0; i < this->tasks.size(); i++){
@@ -138,14 +151,15 @@ void Project::save(){
         projectFile.close();
     }
     else{
-        std::cout << "Could not open file: " + this->pathToConfig << "\n";
+        if(verbose) std::cout << "Could not open file: " + this->pathToConfig << "\n";
         return;
     }
     this->saveFileLocation();
+    if(verbose) std::cout << "\n ----- Project Saved to: " + this->pathToConfig << " -----\n\n";
 }
 //save the task and all sub-tasks recursively
 void Project::saveTask(std::ofstream& projectFile, Task* task){
-    std::cout << "Saving task with id: " << task->getId() << '\n';
+    if(verbose) std::cout << "Saving task with id: " << task->getId() << '\n';
     //save the title
     std::string title = task->getTitle();
     size_t titleSize = title.size();
@@ -205,7 +219,27 @@ void Project::saveTask(std::ofstream& projectFile, Task* task){
 }
 
 void Project::saveQuestions(std::ofstream& projectFile){
-
+    //write the total number of questions to the file
+    int questionCount = this->questions.size();
+    if(verbose) std::cout << "Total number of questions: " << questionCount << '\n';
+    projectFile.write(reinterpret_cast<const char*>(&questionCount), sizeof(questionCount));
+    //write each question
+    for(int i = 0; i < questionCount; i++){
+        if(verbose) std::cout << "Saving question: " << i << '\n';
+        //write the message to the file
+        std::string message = this->questions[i]->getMessage();
+        size_t messageSize = message.size();
+        projectFile.write(reinterpret_cast<const char*>(&messageSize), sizeof(messageSize));
+        projectFile.write(reinterpret_cast<const char*>(&message[0]), messageSize);
+        //write the answer to the file
+        std::string answer = this->questions[i]->getAnswer();
+        size_t answerSize = answer.size();
+        projectFile.write(reinterpret_cast<const char*>(&answerSize), sizeof(answerSize));
+        projectFile.write(reinterpret_cast<const char*>(&answer[0]), answerSize);
+        //write the linked task id to the file
+        int linkedTaskId = this->questions[i]->getLinkedTaskId();
+        projectFile.write(reinterpret_cast<const char*>(&linkedTaskId), sizeof(linkedTaskId));
+    }
 }
 
 void Project::saveFileLocation(){
@@ -237,21 +271,21 @@ void Project::saveFileLocation(){
 }
 
 void Project::load(){
-    std::cout << "\n----- Load project from: " + this->pathToConfig + "-----\n";
+    if(verbose) std::cout << "\n----- Load project from: " + this->pathToConfig + "-----\n";
     std::ifstream projectFile(this->pathToConfig, std::ios::binary);
     if(projectFile.is_open()){
         //get the size of the title
         size_t titleSize;
         projectFile.read(reinterpret_cast<char*>(&titleSize), sizeof(titleSize));
-        std::cout << "Project title size: " << titleSize << "\n";
+        if(verbose) std::cout << "Project title size: " << titleSize << "\n";
         //resize the string to fit the title
         this->title.resize(titleSize);
         projectFile.read(reinterpret_cast<char*>(&this->title[0]), titleSize);
-        std::cout << "Project title: " << title << "\n";
+        if(verbose) std::cout << "Project title: " << title << "\n";
         //get the task map size
         size_t taskMapSize;
         projectFile.read(reinterpret_cast<char*>(&taskMapSize), sizeof(taskMapSize));
-        std::cout << "Task map size: " << taskMapSize << "\n";
+        if(verbose) std::cout << "Task map size: " << taskMapSize << "\n";
 
         //rebuild the map
         std::map<int, std::vector<int>> taskMap;
@@ -266,20 +300,29 @@ void Project::load(){
                 projectFile.read(reinterpret_cast<char*>(&subTaskId), sizeof(subTaskId));
                 subTaskIds.push_back(subTaskId);
             }
-            std::cout << "Mapping for task with id: " << parentId << " -> ";
+            if(verbose) std::cout << "Mapping for task with id: " << parentId << " -> ";
             for(int i = 0; i < subTaskIds.size(); i++){
-                std::cout << subTaskIds[i];
+                if(verbose) std::cout << subTaskIds[i];
                 if(i != subTaskIds.size()-1){
-                    std::cout << ", ";
+                    if(verbose) std::cout << ", ";
                 }
             }
-            std::cout << "\n";
+            if(verbose) std::cout << "\n";
             taskMap.insert(std::pair<int, std::vector<int>>(parentId, subTaskIds));
         }
-        //get tasks
-        std::vector<Task*> tasks = this->loadTasks(projectFile);
+        //get tasks (pointers are created using new)
+        std::vector<Task*> allTasks = this->loadTasks(projectFile);
+        this->tasks = connectTasks(taskMap, allTasks);
+
         //get the questions
-        //this->loadQuestions(projectFile);
+        this->questions = this->loadQuestions(projectFile);
+
+        if(verbose) {
+            std::cout << "----- Loaded Questions -----\n";
+            for(int i = 0; i < this->questions.size(); i++){
+                this->questions[i]->printQuestion();
+            }
+        }
 
         projectFile.close();
     }
@@ -293,7 +336,7 @@ std::vector<Task*> Project::loadTasks(std::ifstream& projectFile){
     //get the number of tasks
     int taskCount;
     projectFile.read(reinterpret_cast<char*>(&taskCount), sizeof(taskCount));
-    std::cout << "Total number of tasks: " << taskCount << "\n";
+    if(verbose) std::cout << "Total number of tasks: " << taskCount << "\n";
     for(int i = 0; i < taskCount; i++){
         //load the title
         std::string title;
@@ -350,18 +393,86 @@ std::vector<Task*> Project::loadTasks(std::ifstream& projectFile){
         dateFinished.resize(dateFinishedSize);
         projectFile.read(reinterpret_cast<char*>(&dateFinished[0]), dateFinishedSize);
         //create the task
-        Task task = Task(title, id, progressNotes, status, dueDate, dateCreated, dateStarted, dateFinished);
-        std::cout << "\n----- Loaded task -----\n";
-        task.printTask();
-        tasks.push_back(&task);
+        Task* task = new Task(title, id, progressNotes, status, dueDate, dateCreated, dateStarted, dateFinished);
+        tasks.push_back(task);
+    }
+    return tasks;
+}
+
+std::vector<Task*> Project::connectTasks(std::map<int, std::vector<int>> taskMap, std::vector<Task*> allTasks){
+    std::vector<Task*> rootTasks;
+    if(verbose){
+        std::cout << "----- Loaded Tasks -----\n";
+        for(int i = 0; i < allTasks.size(); i++){
+            allTasks[i]->printTask();
+        }
     }
 
-    return tasks;
+
+    //use the taskMap to connect sub-tasks
+    std::map<int, std::vector<int>>::iterator it;
+    for(it = taskMap.begin(); it != taskMap.end(); it++){
+        int id = it->first;
+        std::vector<int> subTaskIds = it->second;
+        //find the task with the given id
+        Task* parentTask = nullptr;
+        for(int i = 0; i < allTasks.size(); i++){
+            if(allTasks[i]->getId() == id){
+                parentTask = allTasks[i];
+                break;
+            }
+        }
+        if(parentTask == nullptr){
+            std::cout << "Could not find task with id: " << id << '\n';
+        }
+        //connect the subtasks
+        for(int i = 0; i < subTaskIds.size(); i++){
+            int subTaskId = subTaskIds[i];
+            //search through all of the tasks for the task
+            for(int j = 0; j < allTasks.size(); j++){
+                if(allTasks[j]->getId() == subTaskId){
+                    parentTask->addSubTask(allTasks[j]);
+                    break;
+                }
+            }
+        }
+    }
+    for(int i = 0; i < allTasks.size(); i++){
+        if(allTasks[i]->getParentTask() == nullptr){
+            rootTasks.push_back(allTasks[i]);
+        }
+    }
+    return rootTasks;
 }
 
 std::vector<Question*> Project::loadQuestions(std::ifstream& projectFile){
     std::vector<Question*> questions;
+    //get the number of questions from the file
+    int questionCount;
+    projectFile.read(reinterpret_cast<char*>(&questionCount), sizeof(questionCount));
+    for(int i = 0; i < questionCount; i++){
+        std::string message;
+        std::string answer;
+        int linkedTaskId;
+        //get the size of the message
+        size_t messageSize;
+        projectFile.read(reinterpret_cast<char*>(&messageSize), sizeof(messageSize));
+        //resize the string to fit the message
+        message.resize(messageSize);
+        projectFile.read(reinterpret_cast<char*>(&message[0]), messageSize);
+        //get the size of the answer
+        size_t answerSize;
+        projectFile.read(reinterpret_cast<char*>(&answerSize), sizeof(answerSize));
+        //resize the string to fit the message
+        answer.resize(answerSize);
+        projectFile.read(reinterpret_cast<char*>(&answer[0]), answerSize);
+        //get the linked task id
+        projectFile.read(reinterpret_cast<char*>(&linkedTaskId), sizeof(linkedTaskId));
 
+        //create a new question and add it to the vector
+        Question* question = new Question(message, answer, linkedTaskId);
+        questions.push_back(question);
+    }
     return questions;
 }
 
@@ -373,7 +484,7 @@ void Project::printProject(){
     for(int i = 0; i < this->tasks.size(); i++){
         this->tasks[i]->printTaskTree(0);
     }
-    std::cout << "Questions: \n";
+    std::cout << "\nQuestions: \n";
     for(int i = 0; i < this->questions.size(); i++){
         this->questions[i]->printQuestion();
     }

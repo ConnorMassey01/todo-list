@@ -5,79 +5,72 @@
 #include "headers/projectLoader.h"
 
 void testTaskClass(){
-   Task parentTask = Task("Parent", 0, 7);
-   parentTask.addProgressNote("Note on progress");
-   parentTask.startTask();
-   parentTask.finishTask();
-   parentTask.printTask();
+   Task* parentTask = new Task("Parent", 0, 7);
+   parentTask->addProgressNote("Note on progress");
+   parentTask->startTask();
+   parentTask->finishTask();
+   parentTask->printTask();
 
-   Task childTask = Task("Child", 1, 4);
-   Task otherChildTask = Task("Other child", 1, 4);
-   Task grandchildTask = Task("Grandchild", 1, 4);
-   childTask.addProgressNote("This is my message to add");
+   Task* childTask = new Task("Child", 1, 4);
+   Task* otherChildTask = new Task("Other child", 1, 4);
+   Task* grandchildTask = new Task("Grandchild", 1, 4);
+   childTask->addProgressNote("This is my message to add");
 
-   parentTask.addSubTask(&childTask);
-   parentTask.addSubTask(&otherChildTask);
-   childTask.addSubTask(&grandchildTask);
-   parentTask.printTaskTree(0);
-   grandchildTask.printParents();
+   parentTask->addSubTask(childTask);
+   parentTask->addSubTask(otherChildTask);
+   childTask->addSubTask(grandchildTask);
 
-   parentTask.removeSubTask(&childTask);
-   parentTask.printTaskTree(0);
-   childTask.printParents();
-   grandchildTask.printParents();
+   parentTask->printTaskTree(0);
+   grandchildTask->printParents();
+
+   parentTask->removeSubTask(childTask);
+   grandchildTask = nullptr;
+   childTask = nullptr;
+   parentTask->printTaskTree(0);
+
+   delete parentTask;
+
 }
 
 void testQuestionClass(){
-   Task exampleTask = Task("Example Task", 0, 3);
-   Question myQuestion("Example Question", &exampleTask);
-   myQuestion.printQuestion();
-   myQuestion.setAnswer("This is the answer");
-   myQuestion.printQuestion();
+   Task* exampleTask = new Task("Example Task", 0, 3);
+   Question* myQuestion = new Question("Example Question", exampleTask->getId());
+   myQuestion->printQuestion();
+   myQuestion->setAnswer("This is the answer");
+   myQuestion->printQuestion();
+   delete exampleTask;
+   delete myQuestion;
 }
 
 void testProjectClass(){
-   Task exampleTask = Task("Example Task", 0, 3);
-   Question myQuestion = Question("Example Question", &exampleTask);
+   Task* exampleTask = new Task("Example Task", 0, 9);
+   Task* exampleChildTask = new Task("Example Child Task", 1, 3);
+   exampleTask->addSubTask(exampleChildTask);
    std::vector<Task*> tasks;
-   tasks.push_back(&exampleTask);
+   tasks.push_back(exampleTask);
+
    std::vector<Question*> questions;
-   questions.push_back(&myQuestion);
-   Project exampleProject("Example Project", "storage/exampleProject.bin", tasks, questions);
-   exampleProject.printProject();
+   Question* myQuestion = new Question("Example Question", exampleTask->getId());
+   myQuestion->setAnswer("This is my answer");
+   questions.push_back(myQuestion);
+
+   Project* exampleProject = new Project("Second Example Project", "storage\\exampleProject.bin", tasks, questions);
+   exampleProject->printProject();
+   //save the project to storage at the location provided in the constructor
+   exampleProject->save();
+   //free the memory
+   delete exampleProject;
 }
 
 void testProjectLoader(){
-   //create an example project
-   Project project = Project("Example Project", "storage\\example.bin");
-   Task exampleTask = Task("Example Task", 0, 3);
-   Task childTask = Task("Child", 1, 4);
-   Task grandchildTask = Task("Grandchild", 2, 6);
-   Task secondChildTask = Task("Second child", 3, 3);
-   Task secondExampleTask = Task("Second Example", 4, 2);
-   Task secondExampleChildTask = Task("Second example child", 5, 3);
-   exampleTask.addSubTask(&childTask);
-   childTask.addSubTask(&grandchildTask);
-   exampleTask.addSubTask(&secondChildTask);
-   secondExampleTask.addSubTask(&secondExampleChildTask);
-   project.addTask(&exampleTask);
-   project.addTask(&secondExampleTask);
-   Question myQuestion = Question("Example Question", &exampleTask);
-   project.addQuestion(&myQuestion);
-
-   //print the project
-   project.printProject();
-
-   //save the project
-   project.save();
-
-   ProjectLoader projectLoader = ProjectLoader();
    //load all projects
-   std::vector<Project> projects = projectLoader.getProjects();
+   ProjectLoader projectLoader = ProjectLoader();
+   std::cout << "Projects loaded\n";
+   std::vector<Project*> projects = projectLoader.getProjects();
    //print all of the projects
    for(int i = 0; i < projects.size(); i++){
       std::cout << "\n";
-      projects[i].printProject();
+      projects[i]->printProject();
    }
    std::cout << "\n";
 }
@@ -85,7 +78,7 @@ void testProjectLoader(){
 int main() {
    //testTaskClass();
    //testQuestionClass();
-   //testProjectClass();
+   testProjectClass();
    testProjectLoader();
    return 0;
 }

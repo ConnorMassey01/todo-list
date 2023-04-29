@@ -3,7 +3,6 @@
 #include <vector>
 #include <iostream>
 
-
 enum Status { Backlog, InProgress, Done};
 
 typedef struct ProgressNote {

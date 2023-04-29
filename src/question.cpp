@@ -9,13 +9,18 @@
 Question::Question(){
     this->message = "";
     this->answer = "";
-    this->linkedTask = nullptr;
 }
 
-Question::Question(std::string message, Task* linkedTask){
+Question::Question(std::string message, int linkedTaskId){
     this->message = message;
     this->answer = "";
-    this->linkedTask = linkedTask;
+    this->linkedTaskId = linkedTaskId;
+}
+
+Question::Question(std::string message, std::string answer, int linkedTaskId){
+    this->message = message;
+    this->answer = answer;
+    this->linkedTaskId = linkedTaskId;
 }
 
 Question::~Question(){
@@ -36,19 +41,16 @@ std::string Question::getAnswer(){
     return this->answer;
 }
 
-void Question::setLinkedTask(Task* linkedTask){
-    this->linkedTask = linkedTask;
+void Question::setLinkedTaskId(int linkedTaskId){
+    this->linkedTaskId = linkedTaskId;
 }
-Task* Question::getLinkedTask(){
-    return this->linkedTask;
+int Question::getLinkedTaskId(){
+    return this->linkedTaskId;
 }
 
 void Question::printQuestion(){
     std::cout << "--- Question ---" << "\n";
     std::cout << "Q: " << this->message << "\n";
     std::cout << "A: " << this->answer << "\n";
-    if(this->linkedTask != nullptr){
-        std::cout << "Task: " << this->linkedTask->getTitle() << "\n";
-    }
-    
+    std::cout << "Task id: " << this->linkedTaskId << "\n\n";
 }
