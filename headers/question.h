@@ -1,6 +1,7 @@
 #pragma once
 #include "task.h"
 #include <string>
+#include "verbose.h"
 
 class Question {
 private:

@@ -22,7 +22,7 @@ Project::Project(std::string title, std::string pathToConfig, std::vector<Task*>
     this->questions = questions;
 }
 Project::~Project(){
-    std::cout << "Project destructor for: " << this->title << "\n";
+    if(verbose) std::cout << "Project destructor for: " << this->title << "\n";
 
     //delete all Task pointers
     for(int i = 0; i < this->tasks.size(); i++){

@@ -24,7 +24,7 @@ Question::Question(std::string message, std::string answer, int linkedTaskId){
 }
 
 Question::~Question(){
-    std::cout << "Question destructor" << "\n";
+    if(verbose) std::cout << "Question destructor" << "\n";
 }
 
 void Question::setMessage(std::string message){

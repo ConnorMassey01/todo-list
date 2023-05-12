@@ -2,7 +2,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
-
+#include "verbose.h"
 enum Status { Backlog, InProgress, Done};
 
 typedef struct ProgressNote {

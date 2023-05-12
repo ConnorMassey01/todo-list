@@ -3,6 +3,7 @@
 #include "headers/question.h"
 #include "headers/project.h"
 #include "headers/projectLoader.h"
+#include "headers/userInputHandler.h"
 
 void testTaskClass(){
    Task* parentTask = new Task("Parent", 0, 7);
@@ -75,10 +76,16 @@ void testProjectLoader(){
    std::cout << "\n";
 }
 
+void testUserInputHandler(){
+   UserInputHandler userInputHandler = UserInputHandler();
+   userInputHandler.start();
+}
+
 int main() {
    //testTaskClass();
    //testQuestionClass();
-   testProjectClass();
-   testProjectLoader();
+   //testProjectClass();
+   //testProjectLoader();
+   testUserInputHandler();
    return 0;
 }

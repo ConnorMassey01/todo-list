@@ -1,6 +1,5 @@
 #include "../headers/projectLoader.h"
 
-
 //public methods
 ProjectLoader::ProjectLoader(){
     //get all of the path
@@ -12,9 +11,9 @@ ProjectLoader::ProjectLoader(){
 }
 
 ProjectLoader::~ProjectLoader(){
-    std::cout << "Project loader destructor\n";
+    if(verbose) std::cout << "Project loader destructor\n";
     for(int i = 0; i < this->projects.size(); i++){
-        std::cout << "----- Delete project " << i << ": " << this->projects[i]->getTitle() << " -----\n";
+        if(verbose) std::cout << "----- Delete project " << i << ": " << this->projects[i]->getTitle() << " -----\n";
         delete this->projects[i]; //calls the projects destructor
     }
     this->projects.clear();

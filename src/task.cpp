@@ -1,10 +1,6 @@
 #include "../headers/task.h"
 #include "../headers/date.h"
-#include <iostream>
 
-//private methods
-
-//public methods
 
 Task::Task(){
     //does nothing
@@ -35,10 +31,10 @@ Task::Task(const std::string &title, int id, const std::vector<ProgressNote> &pr
 }
 
 Task::~Task(){
-    std::cout << "Task Destructor for " << this->title << "\n";
+    if(verbose) std::cout << "Task Destructor for " << this->title << "\n";
     //delete all subtasks
     for(int i = 0; i < this->subTasks.size(); i++){
-        std::cout << "Deleting subTask: " << this->subTasks[i]->getTitle() << "\n";
+        if(verbose) std::cout << "Deleting subTask: " << this->subTasks[i]->getTitle() << "\n";
         delete this->subTasks[i];
     }
     this->subTasks.clear();

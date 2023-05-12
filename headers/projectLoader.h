@@ -4,7 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include "project.h"
-
+#include "verbose.h"
 #define CONFIG_FILE_PATH "storage\\project-list.txt"
 
 class ProjectLoader {
